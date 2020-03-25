@@ -1,0 +1,25 @@
+#Load common configuration
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile" ]]; then
+    source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile"
+fi
+
+#Define some custom variables
+export PROMOTION="$HOME/Dropbox/Studium/PROMOTION/"
+
+#SciFi40 Software
+export PATH=$HOME/SciFi/lhcb-scifi40-software/bin:$PATH
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Applications/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Applications/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/Applications/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Applications/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<

@@ -10,4 +10,132 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# ==========================
 # Customize to your needs...
+# ==========================
+#  Enable fzf if available
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Enable iTerm2 shell integration if available
+[ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
+
+# Change tmux window title to something meaningful
+#  Needs to have allow_rename set to on in .tmux.conf!
+if [[ -n "$TMUX" ]]; then
+    local prompt_command='printf "\033k'
+    [[ -n "$SSH_CONNECTION" ]] && prompt_command+="($(hostname -s)) "
+    prompt_command+='${PWD/#$HOME/"~"}\033\\"'
+
+    PROMPT_COMMAND=${prompt_command}
+    precmd() { eval "$PROMPT_COMMAND" }
+fi
+
+
+# Turn off beep
+unsetopt beep
+
+# History
+HISTFILE=~/.zshhist
+HISTSIZE=100000
+SAVEHIST=100000
+setopt hist_ignore_dups
+setopt append_history
+
+# Extended glob features (e.g. negate * with ^: ^*)
+setopt extendedglob
+
+#Set neovim to be the default vim if available
+if command -v nvim > /dev/null; then
+    alias vim="nvim"
+fi
+alias vi=vim  #Point to same as vim
+
+#Snakemake zsh completion
+if command -v snakemake > /dev/null; then
+    compdef _gnu_generic snakemake
+fi
+
+#Little function to plot the fullpath to a given file
+path () {
+  local totpath="$(cd $(dirname "$1") && pwd -P)/$(basename "$1")"
+  printf "$totpath" | pbcopy;
+  echo Copied "$totpath" to clipboard.
+}
+
+#Function to mount via ssh
+#First argument: server
+#Second argument (optional):
+sshmount () {
+  local VOLNAME=${1}${2//\//-}  #Replace / with - for the volname
+  local MOUNTDIR=/tmp/Mounts/$VOLNAME
+  #Check if directory is already mounted
+  if contains "`mount`" $MOUNTDIR
+  then
+    echo $MOUNTDIR is already mounted
+    return 1
+  else
+    mkdir -p $MOUNTDIR   #Create dir if it does not exist
+    if sshfs -o allow_other,auto_cache,reconnect,defer_permissions,noappledouble $1:$2 $MOUNTDIR -o volname=$VOLNAME
+    then   #Mount successful
+      echo Mounted $VOLNAME in $MOUNTDIR
+      return 0
+    else   #Error while trying to mount
+      echo Removing $MOUNTDIR...
+      umount $MOUNTDIR
+      rm -r $MOUNTDIR
+      return 1
+    fi
+  fi
+}
+
+#Helper function to check if an element is in a given list
+#Usage: contains aList anItem
+contains() {
+    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && return 0 || return 1
+}
+
+
+#Forward jupyter notebook server from remote via ssh
+#$1 is the remote host, $2 the port (optional, default=8889)
+sshjupyter () {
+    sshforward $1 ${2:-8889}
+}
+
+#Jupyter forwarding over ssh
+alias jupyter_forwarding="jupyter notebook --no-browser --port=8889"
+
+sshvnc () {
+    sshforward $1 ${2:-5900}
+}
+
+#============== Generic port forwarding functions =======================
+# Taken from: https://stackoverflow.com/questions/2241063/bash-script-to-setup-a-temporary-ssh-tunnel
+
+#Function establish a connection
+#Argument 1 is the remote host, 2 the remote port, 3 (optional) the local port
+sshforward () {
+    local host=${1}
+    local hostport=${2}
+    local localport=${3:-${hostport}}
+    echo "Forwarding local port ${localport} to ${host}:${hostport}..."
+    ssh -M -S ~/${host}:${localport} -fnNT -L localhost:${localport}:localhost:${hostport} ${host}
+}
+
+#Open a SOCKS tunnel
+sshsocks() {
+    local host=${1}
+    local port=${2:-8123}
+    echo "Opening SOCKS tunnel to ${host} on local port ${port}..."
+    ssh -M -S ~/${host}:${port} -D ${port} -fqN ${host}
+}
+
+#Function to close an established connection with sshforward
+sshclose () {
+    for arg in "$@"; do
+        parts=(${(s_:_)arg}) #split by colon
+        local host=${parts[1]}
+        local hostport=${parts[2]}
+        echo "Closing connection to ${host}:${hostport}..."
+        ssh -S ~/${host}:${hostport} -O exit ${host}
+    done
+}
