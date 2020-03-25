@@ -139,3 +139,7 @@ sshclose () {
         ssh -S ~/${host}:${hostport} -O exit ${host}
     done
 }
+
+
+#Pure prompt settings
+zstyle :prompt:pure:prompt:success color green
