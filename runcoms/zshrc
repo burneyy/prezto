@@ -113,32 +113,34 @@ sshvnc () {
 
 #Function establish a connection
 #Argument 1 is the remote host, 2 the remote port, 3 (optional) the local port
+_ssh_socket_dir="/tmp/ssh-sockets"
 sshforward () {
-    local host=${1}
-    local hostport=${2}
-    local localport=${3:-${hostport}}
+    mkdir -p "${_ssh_socket_dir}"
+    local host="${1}"
+    local hostport="${2}"
+    local localport="${3:-${hostport}}"
     echo "Forwarding local port ${localport} to ${host}:${hostport}..."
-    ssh -M -S ~/${host}:${localport} -fnNT -L localhost:${localport}:localhost:${hostport} ${host}
+    ssh -M -S "${_ssh_socket_dir}/${host}:${hostport}:${localport}" -fnNT -L "localhost:${localport}:localhost:${hostport}" "${host}"
 }
 
 #Open a SOCKS tunnel
 sshsocks() {
-    local host=${1}
-    local port=${2:-8123}
-    echo "Opening SOCKS tunnel to ${host} on local port ${port}..."
-    ssh -M -S ~/${host}:${port} -D ${port} -fqN ${host}
+    local host="${1}"
+    local localport="${2:-8123}"
+    echo "Opening SOCKS tunnel to ${host} on local port ${localport}..."
+    ssh -M -S "${_ssh_socket_dir}/${host}:SOCKS:${localport}" -D "${localport}" -fqN "${host}"
 }
 
 #Function to close an established connection with sshforward
 sshclose () {
-    for arg in "$@"; do
-        parts=(${(s_:_)arg}) #split by colon
-        local host=${parts[1]}
-        local hostport=${parts[2]}
-        echo "Closing connection to ${host}:${hostport}..."
-        ssh -S ~/${host}:${hostport} -O exit ${host}
+    for socket in "$@"; do
+        parts=(${(s_:_)socket}) #split by colon
+        local host="${parts[1]}"
+        echo "Closing connection to ${socket}..."
+        ssh -S "${_ssh_socket_dir}/${socket}" -O exit "${host}"
     done
 }
+compdef "_files -W ${_ssh_socket_dir}" sshclose
 
 
 #Pure prompt settings
