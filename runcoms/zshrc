@@ -19,16 +19,40 @@ fi
 # Enable iTerm2 shell integration if available
 [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
 
+# Custom TMUX commands
+# ====================
+#Update display in case we lost the connection through X11
+tmux_update_display()
+{
+    export DISPLAY="`tmux show-env | sed -n 's/^DISPLAY=//p'`"
+}
+
 # Change tmux window title to something meaningful
 #  Needs to have allow_rename set to on in .tmux.conf!
-if [[ -n "$TMUX" ]]; then
+tmux_reset_name()
+{
     local prompt_command='printf "\033k'
     [[ -n "$SSH_CONNECTION" ]] && prompt_command+="($(hostname -s)) "
     prompt_command+='${PWD/#$HOME/"~"}\033\\"'
 
     PROMPT_COMMAND=${prompt_command}
     precmd() { eval "$PROMPT_COMMAND" }
+}
+
+if [[ -n "$TMUX" ]]; then
+    tmux_reset_name
 fi
+
+#Set name to specific string
+tmux_set_name()
+{
+    prompt_command='printf "\033k'
+    prompt_command+="$@"
+    prompt_command+='\033\\"'
+    PROMPT_COMMAND=${prompt_command}
+    precmd() { eval "$PROMPT_COMMAND" }
+}
+
 
 
 # Turn off beep
