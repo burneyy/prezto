@@ -1,0 +1,20 @@
+#
+# Executes commands at login pre-zshrc.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+#
+#Load common configuration
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile" ]]; then
+    source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile"
+fi
+
+# Directories
+export WORK="/afs/cern.ch/work/d/dabernin/private"
+export EOSSCIFI="/eos/lhcb/testbeam/scifi"
+
+# Make own software available
+export PATH="$WORK/bin:$PATH"
+export LD_LIBRARY_PATH="$WORK/lib:$WORK/lib64:$LD_LIBRARY_PATH"
+export CPATH="$WORK/include:$CPATH"

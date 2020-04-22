@@ -1,0 +1,12 @@
+#Load common configuration
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zshrc" ]]; then
+    source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zshrc"
+fi
+
+#Install software with cmake in right place
+alias cmake='cmake -DCMAKE_INSTALL_PREFIX=/afs/cern.ch/work/d/dabernin/private'
+
+#Save tmux session history
+if [ -n "$TMUX" ]; then
+    echo "`date` | `hostname` | `tmux display-message -p '#S'`" >> ~/log/tmuxsessionhist.txt
+fi

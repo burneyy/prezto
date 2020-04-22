@@ -1,0 +1,10 @@
+#
+# Sets Prezto options.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+#Load common configuration
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zpreztorc" ]]; then
+    source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zpreztorc"
+fi
