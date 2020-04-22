@@ -167,5 +167,3 @@ sshclose () {
 compdef "_files -W ${_ssh_socket_dir}" sshclose
 
 
-#Pure prompt settings
-zstyle :prompt:pure:prompt:success color green

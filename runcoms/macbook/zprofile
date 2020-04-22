@@ -1,13 +1,28 @@
+#
+# Executes commands at login pre-zshrc.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+#
 #Load common configuration
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile" ]]; then
     source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zprofile"
 fi
 
+#
+# Editors
+#
+
+export EDITOR='nvim'
+export VISUAL='nvim'
+export PAGER='less'
+
 #Define some custom variables
 export PROMOTION="$HOME/Dropbox/Studium/PROMOTION/"
 
 #SciFi40 Software
-export PATH=$HOME/SciFi/lhcb-scifi40-software/bin:$PATH
+export PATH="$HOME/SciFi/lhcb-scifi40-software/bin:$PATH"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
