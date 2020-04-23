@@ -10,3 +10,17 @@ alias cmake='cmake -DCMAKE_INSTALL_PREFIX=/afs/cern.ch/work/d/dabernin/private'
 if [ -n "$TMUX" ]; then
     echo "`date` | `hostname` | `tmux display-message -p '#S'`" >> ~/log/tmuxsessionhist.txt
 fi
+
+# lcg_virtuelenv settings
+#Show python virtualenv in prompt
+export VIRTUAL_ENV_DISABLE_PROMPT=12
+
+# Tab completion for create_lcg_virtualenv
+_lcg_virtualenv="/afs/cern.ch/work/d/dabernin/private/opt/lcg_virtualenv"
+fpath=("$_lcg_virtualenv/completion" $fpath)
+
+# Tab completion for activating lcg_virtualenv
+lcg_virtualenv_activate() {
+    source $_lcg_virtualenv/envs/$1/bin/activate
+}
+compdef "_files -/ -W $_lcg_virtualenv/envs" lcg_virtualenv_activate
