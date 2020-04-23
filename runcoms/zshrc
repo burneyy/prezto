@@ -75,9 +75,7 @@ fi
 alias vi=vim  #Point to same as vim
 
 #Snakemake zsh completion
-if command -v snakemake > /dev/null; then
-    compdef _gnu_generic snakemake
-fi
+compdef _gnu_generic snakemake
 
 #Little function to plot the fullpath to a given file
 path () {
