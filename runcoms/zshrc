@@ -76,6 +76,8 @@ alias vi=vim  #Point to same as vim
 
 #Snakemake zsh completion
 compdef _gnu_generic snakemake
+#Snakemake: use 1 core by default
+alias snakemake="snakemake --cores 1"
 
 #Little function to plot the fullpath to a given file
 path () {
