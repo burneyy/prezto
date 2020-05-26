@@ -149,10 +149,11 @@ sshforward () {
 
 #Open a SOCKS tunnel
 sshsocks() {
+    mkdir -p "${_ssh_socket_dir}"
     local host="${1}"
     local localport="${2:-8123}"
     echo "Opening SOCKS tunnel to ${host} on local port ${localport}..."
-    ssh -M -S "${_ssh_socket_dir}/${host}:SOCKS:${localport}" -D "${localport}" -fqN "${host}"
+    ssh -M -S "${_ssh_socket_dir}/${host}:SOCKS:${localport}" -D ${localport} -fqN "${host}"
 }
 
 #Function to close an established connection with sshforward
