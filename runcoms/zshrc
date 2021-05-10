@@ -74,6 +74,9 @@ if command -v nvim > /dev/null; then
 fi
 alias vi=vim  #Point to same as vim
 
+# ps -ef alias
+alias psf="ps -ef"
+
 #Snakemake zsh completion
 compdef _gnu_generic snakemake
 #Snakemake: use 1 core by default
